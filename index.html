@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Duty Log</title>
+  <!-- Tailwind CSS for styling -->
   <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="bg-gray-100 flex items-center justify-center h-screen p-4">
@@ -30,7 +31,7 @@
       </div>
     </div>
 
-    <!-- Existing Checkboxes -->
+    <!-- Checkboxes -->
     <div class="space-y-4 mb-6">
       <label class="flex items-center space-x-3 cursor-pointer">
         <input type="checkbox" id="paramedic" class="w-5 h-5 text-blue-600 rounded focus:ring-blue-500">
@@ -43,38 +44,41 @@
       </label>
     </div>
 
+    <!-- Submit Button -->
     <button id="logButton" onclick="submitLog()" class="w-full bg-blue-600 text-white font-bold py-3 px-4 rounded-lg shadow hover:bg-blue-700 active:bg-blue-800 transition duration-200">
       Log Time & Depart
     </button>
     
+    <!-- Hidden text that shows success/error messages -->
     <p id="statusMessage" class="text-center mt-4 text-sm hidden font-medium"></p>
   </div>
 
   <script>
-    // PASTE YOUR GOOGLE APPS SCRIPT WEB APP URL HERE
-    const scriptUrl = 'https://script.google.com/macros/s/AKfycbw3OcrQVPioaKo9oO4X2oFVQ9I1eXLMrzD4O_wwVnE6NiCrXYsHbLNu6IH-vtuurqve_Q/exec';
+    // ⚠️ PASTE YOUR GOOGLE APPS SCRIPT WEB APP URL BETWEEN THESE QUOTES:
+    const scriptUrl = 'YOUR_WEB_APP_URL_HERE';
 
     async function submitLog() {
       const button = document.getElementById('logButton');
       const statusText = document.getElementById('statusMessage');
       
-      // Find out which shift radio button is selected
+      // Find out which shift radio button is checked
       const shiftSelected = document.querySelector('input[name="shiftType"]:checked').value;
       
-      // Get values
+      // Gather our payload data
       const payload = {
         shiftType: shiftSelected,
         paramedic: document.getElementById('paramedic').checked,
         lunch: document.getElementById('lunch').checked
       };
 
-      // UI updates during submission
+      // Disable button and show loading text
       button.disabled = true;
       button.innerText = 'Logging...';
       button.classList.replace('bg-blue-600', 'bg-gray-400');
       statusText.classList.add('hidden');
 
       try {
+        // Send the data silently in the background
         const response = await fetch(scriptUrl, {
           method: 'POST',
           headers: { 'Content-Type': 'text/plain;charset=utf-8' },
@@ -84,20 +88,23 @@
         const result = await response.json();
 
         if (result.success) {
+          // Show success message
           statusText.innerText = '✅ Logged successfully!';
           statusText.className = 'text-center mt-4 text-sm font-medium text-green-600 block';
           
-          // Reset checkboxes (leave shift type as is so you don't have to keep selecting it)
+          // Uncheck the boxes, but leave shift type selected
           document.getElementById('paramedic').checked = false;
           document.getElementById('lunch').checked = false;
         } else {
           throw new Error(result.error);
         }
       } catch (error) {
+        // Show error message
         statusText.innerText = '❌ Error logging time.';
         statusText.className = 'text-center mt-4 text-sm font-medium text-red-600 block';
         console.error(error);
       } finally {
+        // Bring the button back to its normal state
         button.disabled = false;
         button.innerText = 'Log Time & Depart';
         button.classList.replace('bg-gray-400', 'bg-blue-600');
@@ -106,5 +113,3 @@
   </script>
 </body>
 </html>
-
---https://script.google.com/macros/s/AKfycbw3OcrQVPioaKo9oO4X2oFVQ9I1eXLMrzD4O_wwVnE6NiCrXYsHbLNu6IH-vtuurqve_Q/exec
