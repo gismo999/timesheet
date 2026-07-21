@@ -100,7 +100,7 @@
         }
       } catch (error) {
         // Show error message
-        statusText.innerText = '❌ Error logging time.';
+        statusText.innerText = '❌ Error: ' + error.message;
         statusText.className = 'text-center mt-4 text-sm font-medium text-red-600 block';
         console.error(error);
       } finally {
